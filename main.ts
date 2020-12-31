@@ -11,8 +11,7 @@ function setClimbing (on: boolean) {
     }
 }
 scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
-    sprite.image.flipX()
-    sprite.setVelocity(sprite.vx * -1, 0)
+    turnEnemy(sprite)
 })
 function onLadder () {
     if (Ghostee.tileKindAt(TileDirection.Center, myTiles.tile7)) {
@@ -27,8 +26,18 @@ function onLadder () {
         return 0
     }
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+info.onLifeZero(function () {
     game.over(false)
+})
+function turnEnemy (sprite: Sprite) {
+    sprite.image.flipX()
+    sprite.setVelocity(sprite.vx * -1, 0)
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    turnEnemy(otherSprite)
+    info.changeLifeBy(-1)
+    tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
+    sprite.startEffect(effects.halo, 500)
 })
 let Baddee: Sprite = null
 let Ghostee: Sprite = null
@@ -55,7 +64,7 @@ tiles.setTilemap(tiles.createTilemap(hex`1e0016000100000000000000000000000000000
     2............................2
     2............................2
     222222222222222222222222222222
-    `, [myTiles.transparency16,myTiles.tile1,myTiles.tile2,myTiles.tile3,myTiles.tile4,myTiles.tile7,myTiles.tile8,myTiles.tile9,myTiles.tile10,myTiles.tile5,myTiles.tile6], TileScale.Sixteen))
+    `, [myTiles.transparency16,myTiles.tile1,myTiles.tile2,myTiles.tile3,myTiles.tile4,myTiles.tile7,myTiles.tile8,myTiles.tile9,myTiles.tile10], TileScale.Sixteen))
 Ghostee = sprites.create(img`
     . . . . 6 6 6 6 6 6 6 6 . . . . 
     . . 6 6 6 9 9 9 9 9 9 6 6 6 . . 
@@ -99,6 +108,7 @@ for (let value of tiles.getTilesByType(myTiles.tile4)) {
     Baddee.image.flipX()
     Baddee.setVelocity(-50, 0)
 }
+info.setLife(3)
 game.onUpdate(function () {
     if (onLadder() == 1) {
         setClimbing(true)
