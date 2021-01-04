@@ -11,7 +11,9 @@ function setClimbing (on: boolean) {
     }
 }
 scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
-    turnEnemy(sprite)
+    if (!(sprite.isHittingTile(CollisionDirection.Bottom))) {
+        turnEnemy(sprite)
+    }
 })
 function onLadder () {
     if (Ghostee.tileKindAt(TileDirection.Bottom, myTiles.tile5) || Ghostee.tileKindAt(TileDirection.Center, myTiles.tile5)) {
@@ -24,8 +26,8 @@ info.onLifeZero(function () {
     game.over(false)
 })
 function turnEnemy (sprite: Sprite) {
+    sprite.setVelocity(sprite.vx * -1, sprite.vy)
     sprite.image.flipX()
-    sprite.setVelocity(sprite.vx * -1, 0)
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     turnEnemy(otherSprite)
@@ -80,6 +82,7 @@ for (let value of tiles.getTilesByType(myTiles.tile4)) {
         `, SpriteKind.Enemy)
     tiles.placeOnTile(Baddee, value)
     Baddee.image.flipX()
+    Baddee.ay = 500
     Baddee.setVelocity(-50, 0)
 }
 info.setLife(3)
