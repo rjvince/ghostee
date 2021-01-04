@@ -2,8 +2,7 @@
     "name": "Ghostee",
     "description": "",
     "dependencies": {
-        "device": "*",
-        "tilemaps": "github:microsoft/pxt-tilemaps#v1.10.0"
+        "device": "*"
     },
     "files": [
         "main.blocks",
