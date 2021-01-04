@@ -14,13 +14,7 @@ scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
     turnEnemy(sprite)
 })
 function onLadder () {
-    if (Ghostee.tileKindAt(TileDirection.Center, myTiles.tile7)) {
-        return 1
-    } else if (Ghostee.tileKindAt(TileDirection.Center, myTiles.tile10)) {
-        return 1
-    } else if (Ghostee.tileKindAt(TileDirection.Center, myTiles.tile8)) {
-        return 1
-    } else if (Ghostee.tileKindAt(TileDirection.Center, myTiles.tile9)) {
+    if (Ghostee.tileKindAt(TileDirection.Bottom, myTiles.tile5) || Ghostee.tileKindAt(TileDirection.Center, myTiles.tile5)) {
         return 1
     } else {
         return 0
@@ -36,30 +30,33 @@ function turnEnemy (sprite: Sprite) {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     turnEnemy(otherSprite)
     info.changeLifeBy(-1)
-    tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
-    sprite.startEffect(effects.halo, 500)
+    if (info.life() > 0) {
+        tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
+        sprite.startEffect(effects.halo, 500)
+    }
 })
 let Baddee: Sprite = null
 let Ghostee: Sprite = null
 tiles.setTilemap(tilemap`level_0`)
 Ghostee = sprites.create(img`
-    . . . . 6 6 6 6 6 6 6 6 . . . . 
-    . . 6 6 6 9 9 9 9 9 9 6 6 6 . . 
-    . 6 6 9 9 9 9 9 9 9 9 9 9 6 6 . 
-    . 6 9 9 9 9 9 9 9 9 9 9 9 9 6 . 
-    6 6 9 c c 1 9 9 9 9 c c 1 9 6 6 
-    6 9 9 c c 1 9 9 9 9 c c 1 9 9 6 
-    6 9 9 c c c 9 9 9 9 c c c 9 9 6 
-    6 9 6 1 c c 9 9 9 9 1 c c 6 9 6 
-    6 9 9 9 9 9 9 9 9 9 9 9 9 9 9 6 
-    6 9 9 6 9 9 9 9 9 9 9 9 6 9 9 6 
-    6 9 9 9 c c c c c c c c 9 9 9 6 
-    6 6 9 9 c b b b b b b c 9 9 6 6 
-    . 6 9 9 9 c b b b b c 9 9 9 6 . 
-    . 6 6 9 9 9 c c c c 9 9 9 6 6 . 
-    . . 6 6 6 6 6 6 6 6 6 6 6 6 . . 
-    . . . 6 6 . . 6 6 . . 6 6 . . . 
+    . . . . . . . . . . . . . . 
+    . . . 6 6 6 6 6 6 6 6 . . . 
+    . 6 6 9 9 9 9 9 9 9 9 6 6 . 
+    6 9 9 9 9 9 9 9 9 9 9 9 9 6 
+    6 9 c c 1 9 9 9 9 c c 1 9 6 
+    6 9 c c 1 9 9 9 9 c c 1 9 6 
+    6 9 c c c 9 9 9 9 c c c 9 6 
+    6 9 1 c c 9 9 9 9 1 c c 9 6 
+    6 9 9 9 9 9 9 9 9 9 9 9 9 6 
+    6 9 6 9 9 9 6 6 9 9 9 6 9 6 
+    6 9 9 6 6 6 b b 6 6 6 9 9 6 
+    6 9 9 c b b b b b b c 9 9 6 
+    6 9 9 9 c b b b b c 9 9 9 6 
+    6 6 9 9 9 c c c c 9 9 9 6 6 
+    . 6 6 6 6 6 6 6 6 6 6 6 6 . 
+    . . 6 6 . . 6 6 . . 6 6 . . 
     `, SpriteKind.Player)
+Ghostee.z = 2
 tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
 scene.cameraFollowSprite(Ghostee)
 for (let value of tiles.getTilesByType(myTiles.tile4)) {
