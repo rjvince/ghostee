@@ -41,7 +41,6 @@ let Baddee: Sprite = null
 let Ghostee: Sprite = null
 tiles.setTilemap(tilemap`level_0`)
 Ghostee = sprites.create(img`
-    . . . . . . . . . . . . . . 
     . . . 6 6 6 6 6 6 6 6 . . . 
     . 6 6 9 9 9 9 9 9 9 9 6 6 . 
     6 9 9 9 9 9 9 9 9 9 9 9 9 6 
@@ -85,11 +84,19 @@ for (let value of tiles.getTilesByType(myTiles.tile4)) {
     Baddee.ay = 500
     Baddee.setVelocity(-50, 0)
 }
+let Enemies = sprites.allOfKind(SpriteKind.Enemy)
 info.setLife(3)
 game.onUpdate(function () {
     if (onLadder() == 1) {
         setClimbing(true)
     } else {
         setClimbing(false)
+    }
+    for (let value of Enemies) {
+        if (value.tileKindAt(TileDirection.Bottom, myTiles.tile5) || value.tileKindAt(TileDirection.Center, myTiles.tile5)) {
+            value.ay = 0
+        } else {
+            value.ay = 500
+        }
     }
 })
