@@ -1,5 +1,30 @@
+namespace SpriteKind {
+    export const Enemy_MacPain = SpriteKind.create()
+}
 scene.onOverlapTile(SpriteKind.Player, myTiles.tile3, function (sprite, location) {
     game.over(true, effects.smiles)
+})
+function handleDamage (enemy: Sprite) {
+    turnEnemy(enemy)
+    info.changeLifeBy(-1)
+    if (info.life() > 0) {
+        tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
+        Ghostee.startEffect(effects.halo, 500)
+    }
+}
+function initBaddeeProperties (sprite: Sprite, _type: string) {
+    sprite.setVelocity(-50, 0)
+    sprite.ay = 500
+    if (_type == "Mac") {
+        sprites.setDataBoolean(sprite, "jumper", false)
+    } else if (_type == "Sig") {
+        sprites.setDataBoolean(sprite, "jumper", true)
+    }
+}
+scene.onOverlapTile(SpriteKind.Enemy, myTiles.tile5, function (sprite, location) {
+    if (sprites.readDataBoolean(sprite, "jumper") && sprite.tileKindAt(TileDirection.Bottom, myTiles.tile1)) {
+        sprite.vy = -25
+    }
 })
 function setClimbing (on: boolean) {
     if (on) {
@@ -30,12 +55,7 @@ function turnEnemy (sprite: Sprite) {
     sprite.image.flipX()
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-    turnEnemy(otherSprite)
-    info.changeLifeBy(-1)
-    if (info.life() > 0) {
-        tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
-        sprite.startEffect(effects.halo, 500)
-    }
+    handleDamage(otherSprite)
 })
 let Baddee: Sprite = null
 let Ghostee: Sprite = null
@@ -81,8 +101,30 @@ for (let value of tiles.getTilesByType(myTiles.tile4)) {
         `, SpriteKind.Enemy)
     tiles.placeOnTile(Baddee, value)
     Baddee.image.flipX()
-    Baddee.ay = 500
-    Baddee.setVelocity(-50, 0)
+    initBaddeeProperties(Baddee, "Mac")
+}
+for (let value of tiles.getTilesByType(myTiles.tile11)) {
+    Baddee = sprites.create(img`
+        . . . 4 4 4 9 9 9 9 . . . . . . 
+        . . 4 4 4 9 9 9 9 9 . . . . . . 
+        . . 4 4 4 9 9 9 9 9 9 . . . . . 
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 . . 
+        . 4 4 4 4 4 e e 4 4 4 4 4 4 4 . 
+        . b b d d d d e e d b b b . . . 
+        b d d b d d d d d d d d b b . . 
+        b d d d d d d d d d d d d b . . 
+        b d d d d d d d d d d d d b . . 
+        . b b d d d d d b d d d d b . . 
+        . b d d d d d d d b b b b b . . 
+        . . b d d d d d d e e e e e . . 
+        . . . b b b d d e e e e e e e . 
+        . . 4 4 4 4 b b e 4 e 4 e . e . 
+        . 4 4 4 4 4 . . . 4 4 4 4 4 . . 
+        4 4 4 4 4 4 . . . 4 4 4 4 4 4 . 
+        `, SpriteKind.Enemy)
+    tiles.placeOnTile(Baddee, value)
+    Baddee.image.flipX()
+    initBaddeeProperties(Baddee, "Sig")
 }
 let Enemies = sprites.allOfKind(SpriteKind.Enemy)
 info.setLife(3)
@@ -93,7 +135,7 @@ game.onUpdate(function () {
         setClimbing(false)
     }
     for (let value of Enemies) {
-        if (value.tileKindAt(TileDirection.Bottom, myTiles.tile5) || value.tileKindAt(TileDirection.Center, myTiles.tile5)) {
+        if (value.tileKindAt(TileDirection.Bottom, myTiles.tile5)) {
             value.ay = 0
         } else {
             value.ay = 500
