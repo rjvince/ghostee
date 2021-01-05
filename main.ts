@@ -2,7 +2,8 @@ namespace SpriteKind {
     export const Enemy_MacPain = SpriteKind.create()
 }
 scene.onOverlapTile(SpriteKind.Player, myTiles.tile3, function (sprite, location) {
-    game.over(true, effects.smiles)
+    Level += 1
+    loadLevel(Level)
 })
 function handleDamage (enemy: Sprite) {
     turnEnemy(enemy)
@@ -13,13 +14,13 @@ function handleDamage (enemy: Sprite) {
     }
 }
 function initBaddeeProperties (sprite: Sprite, _type: string) {
-    sprite.setVelocity(-50, 0)
     sprite.ay = 500
     if (_type == "Mac") {
         sprites.setDataBoolean(sprite, "jumper", false)
     } else if (_type == "Sig") {
         sprites.setDataBoolean(sprite, "jumper", true)
     }
+    sprite.setVelocity(-50, 0)
 }
 scene.onOverlapTile(SpriteKind.Enemy, myTiles.tile5, function (sprite, location) {
     if (sprites.readDataBoolean(sprite, "jumper") && sprite.tileKindAt(TileDirection.Bottom, myTiles.tile1)) {
@@ -33,6 +34,38 @@ function setClimbing (on: boolean) {
     } else {
         controller.moveSprite(Ghostee, 45, 0)
         Ghostee.ay = 500
+    }
+}
+function loadLevel (num: number) {
+    if (num == 1) {
+        tiles.setTilemap(tilemap`level_0`)
+    } else if (num == 2) {
+        tiles.setTilemap(tiles.createTilemap(hex`1e001600010000000000000000000000000000000000000000000000000000000001010200000000000000000000000000000000000000000000000000000001010100000000000400000000000000000000040000000000000000000001010101010105010101010101010501010101010101010501010101010101010000000005000000000000000500000000000000000500000000000001010006000005000000000000000500000000000000000500000000000001010101010101010501010101010101010101010105010101010101010101010000000000000500000000000000000000000005000000000000000001010000000400000500000000000000000004000005000000000000000001010101010101010101010101010501010101010101010101010101010101010000000000000000000000000500000000000000000000000000000001010000000000000006000000000500000000000000000000000000000001010101010101050101010101010101010101010105010101010101010101010000000000050000000000000000000000000005000000000000000001010000000000050000000000000000000004000005000000000000000001010101010101010101010501010101010101010101010101050101010101010000000000000000000500000000000000000000000000050000000001010000000400000000000500000000000000000000000400050000000001010101010101010101010101010105010101010101010101010101010101010000000000000000000000000005000000000000000000000000000001010000000000000000000000000005000000000600000000000000000301010101010101010101010101010101010101010101010101010101010101`, img`
+            2............................2
+            2............................2
+            22...........................2
+            22222.2222222.22222222.2222222
+            2............................2
+            2............................2
+            2222222.222222222222.222222222
+            2............................2
+            2............................2
+            2222222222222.2222222222222222
+            2............................2
+            2............................2
+            222222.2222222222222.222222222
+            2............................2
+            2............................2
+            2222222222.2222222222222.22222
+            2............................2
+            2............................2
+            22222222222222.222222222222222
+            2............................2
+            2............................2
+            222222222222222222222222222222
+            `, [myTiles.transparency16,myTiles.tile1,myTiles.tile2,myTiles.tile3,myTiles.tile4,myTiles.tile5,myTiles.tile11], TileScale.Sixteen))
+    } else {
+        game.over(true, effects.smiles)
     }
 }
 scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
@@ -57,29 +90,11 @@ function turnEnemy (sprite: Sprite) {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     handleDamage(otherSprite)
 })
-let Baddee: Sprite = null
 let Ghostee: Sprite = null
-tiles.setTilemap(tilemap`level_0`)
-Ghostee = sprites.create(img`
-    . . . 6 6 6 6 6 6 6 6 . . . 
-    . 6 6 9 9 9 9 9 9 9 9 6 6 . 
-    6 9 9 9 9 9 9 9 9 9 9 9 9 6 
-    6 9 c c 1 9 9 9 9 c c 1 9 6 
-    6 9 c c 1 9 9 9 9 c c 1 9 6 
-    6 9 c c c 9 9 9 9 c c c 9 6 
-    6 9 1 c c 9 9 9 9 1 c c 9 6 
-    6 9 9 9 9 9 9 9 9 9 9 9 9 6 
-    6 9 6 9 9 9 6 6 9 9 9 6 9 6 
-    6 9 9 6 6 6 b b 6 6 6 9 9 6 
-    6 9 9 c b b b b b b c 9 9 6 
-    6 9 9 9 c b b b b c 9 9 9 6 
-    6 6 9 9 9 c c c c 9 9 9 6 6 
-    . 6 6 6 6 6 6 6 6 6 6 6 6 . 
-    . . 6 6 . . 6 6 . . 6 6 . . 
-    `, SpriteKind.Player)
-Ghostee.z = 2
-tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
-scene.cameraFollowSprite(Ghostee)
+let Baddee: Sprite = null
+let Level = 0
+Level = 1
+loadLevel(Level)
 for (let value of tiles.getTilesByType(myTiles.tile4)) {
     Baddee = sprites.create(img`
         . e e e e e e e . . . . . . . . 
@@ -128,6 +143,28 @@ for (let value of tiles.getTilesByType(myTiles.tile11)) {
 }
 let Enemies = sprites.allOfKind(SpriteKind.Enemy)
 info.setLife(3)
+Ghostee = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . 6 6 6 6 6 6 6 6 . . . . 
+    . . 6 6 9 9 9 9 9 9 9 9 6 6 . . 
+    . 6 9 9 9 9 9 9 9 9 9 9 9 9 6 . 
+    . 6 9 c c 1 9 9 9 9 c c 1 9 6 . 
+    . 6 9 c c 1 9 9 9 9 c c 1 9 6 . 
+    . 6 9 c c c 9 9 9 9 c c c 9 6 . 
+    . 6 9 1 c c 9 9 9 9 1 c c 9 6 . 
+    . 6 9 9 9 9 9 9 9 9 9 9 9 9 6 . 
+    . 6 9 6 9 9 9 6 6 9 9 9 6 9 6 . 
+    . 6 9 9 6 6 6 b b 6 6 6 9 9 6 . 
+    . 6 9 9 c b b b b b b c 9 9 6 . 
+    . 6 9 9 9 c b b b b c 9 9 9 6 . 
+    . 6 6 9 9 9 c c c c 9 9 9 6 6 . 
+    . . 6 6 6 6 6 6 6 6 6 6 6 6 . . 
+    . . . 6 6 . . 6 6 . . 6 6 . . . 
+    `, SpriteKind.Player)
+Ghostee.setFlag(SpriteFlag.BounceOnWall, false)
+Ghostee.ay = 500
+tiles.placeOnRandomTile(Ghostee, myTiles.tile2)
+scene.cameraFollowSprite(Ghostee)
 game.onUpdate(function () {
     if (onLadder() == 1) {
         setClimbing(true)
